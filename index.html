@@ -12,7 +12,9 @@
         <script type="text/javascript">
             //always subscribe to ready event and implement widget related code
             //inside callback function , it is the best practice while developing widgets
-            JFCustomWidget.subscribe("ready", function(){
+			
+			if(JFCustomWidget){
+				JFCustomWidget.subscribe("ready", function(){
                 var label = JFCustomWidget.getWidgetSetting('QuestionLabel');
                 document.getElementById('labelText').innerHTML = label;
                 //subscribe to form submit event
@@ -26,7 +28,9 @@
                     // send value to JotForm
                     JFCustomWidget.sendSubmit(msg);
                 });
-            });
+				});
+			}
+
         </script>
     </body>
 </html>
