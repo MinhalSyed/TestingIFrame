@@ -1,36 +1,73 @@
-<!DOCTYPE html>
+<-- Example HTML/JS of how to use the JQuery File Upload library, with resizing -->
+<!DOCTYPE html >
 <html>
-    <head>
-        <script src="//js.jotform.com/JotFormCustomWidget.min.js"></script>
-    </head>
-    <body>
-        <div id="main">
-            <h3>This is my first widget.</h3>
-            <span id="labelText"></span>
-            <input type="text" id="userInput">
-        </div>
-        <script type="text/javascript">
-            //always subscribe to ready event and implement widget related code
-            //inside callback function , it is the best practice while developing widgets
-			
-			if(JFCustomWidget){
-				JFCustomWidget.subscribe("ready", function(){
-                var label = JFCustomWidget.getWidgetSetting('QuestionLabel');
-                document.getElementById('labelText').innerHTML = label;
-                //subscribe to form submit event
-                JFCustomWidget.subscribe("submit", function(){
-                    var msg = {
-                        //you should valid attribute to data for JotForm
-                        //to be able to use youw widget as required
-                        valid: true,
-                        value: document.getElementById('userInput').value
-                    }
-                    // send value to JotForm
-                    JFCustomWidget.sendSubmit(msg);
-                });
-				});
-			}
+<head>
+    <meta charset="utf-8" />
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>this is My Child</title>
+    <script src="scripts/jquery-1.7.2.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $.ajaxSetup({ cache: false });
+        if (!window.console) console = { log: function () { }, clear: function () { } };
+    </script>
+    <script src="scripts/jquery-ui-1.8.20.js" type="text/javascript"></script>
+    <!-- The basic File Upload plugin -->
+    <script type="text/javascript" src="scripts/JavaScript-Load-Image/load-image.js"></script>
+    <script type="text/javascript" src="scripts/JavaScript-Canvas-to-Blob/canvas-to-blob.js"></script>
+    <script type="text/javascript" src="scripts/blueimp-file-upload/js/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="scripts/blueimp-file-upload/js/jquery.fileupload-fp.js"></script>
+
+    <script type="text/ecmascript">
+        "use strict";
+        $(main);
+        function main() {
+            // Initialize the jQuery File Upload widget:
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                process: [
+                    {
+                        action: 'load',
+                        fileTypes: /^image\/(gif|jpeg|png)$/,
+                        maxFileSize: 20000000 // 20MB
+                    },
+                    {
+                        action: 'resize',
+                        maxWidth: 200,
+                        maxHeight: 200,
+                        minWidth: 80,
+                        minHeight: 80
+                    },
+                    {
+                        action: 'save'
+                    }
+                ],
+                done: function (e, data) {
+                    $.each(data.result, function (index, file) {
+                        $('<p/>').text(file.url).appendTo(document.body);
+                        $('<img src="' + file.url + '"/>').appendTo(document.body);
+                        $('#progress .bar').css( 'width', '0px').text("");
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    alert(JSON.stringify(data));
+                    $('#progress .bar').css( 'width', progress * 2 + 'px' ).text(parseInt(data.loaded / data.total * 100));
+                }
+            });
+        }
         </script>
-    </body>
+</head>
+<body>
+    <h2>Test File Upload</h2>
+
+    <input id="fileupload" type="file" name="files[]" data-url="contacts/imageUrl" multiple>
+    <div id="progress" style="border: 2px solid black; margin: 5pt; width: 200px">
+        <div class="bar" style="width: 0%; background: green; height: 15pt"></div>
+    </div>
+
+    <p>Files: </p>
+
+</body>
 </html>
